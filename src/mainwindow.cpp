@@ -5,13 +5,19 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), _midiout(0)
 {
+    udpSocket = new QUdpSocket(this);
+    udpSocket->bind(QHostAddress("192.168.178.23"), 5555);
+
+    connect(udpSocket, SIGNAL(readyRead()),
+            this, SLOT(readPendingDatagrams()));
+
     this->_midiout = new RtMidiOut();
     if (this->_midiout->getPortCount() > 0)
         this->_midiout->openPort(0);
 
     ui->setupUi(this);
 
-    for (int i = 0; i < this->_midiout->getPortCount(); i++)
+    for (unsigned int i = 0; i < this->_midiout->getPortCount(); i++)
         this->ui->cmbPort->addItem(QString::fromStdString(this->_midiout->getPortName(i)));
 
     for (int i = 0; i < 16; i++)
@@ -30,6 +36,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(this->ui->piano, SIGNAL(noteOn(char,char)), this, SLOT(noteOn(char,char)));
     connect(this->ui->piano, SIGNAL(noteOff(char)), this, SLOT(noteOff(char)));
+}
+
+void MainWindow::readPendingDatagrams()
+{
+    while (udpSocket->hasPendingDatagrams())  {
+        QByteArray datagram;
+        datagram.resize(udpSocket->pendingDatagramSize());
+        QHostAddress sender;
+        quint16 senderPort;
+
+        udpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
+        char note = datagram.data()[1];
+        if (datagram.data()[0] == '1')
+            this->noteOn(note, datagram.data()[2]);
+        else if (datagram.data()[0] == '0')
+            this->noteOff(note);
+    }
 }
 
 MainWindow::~MainWindow()

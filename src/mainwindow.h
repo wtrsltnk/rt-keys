@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "RtMidi.h"
+#include <QUdpSocket>
 
 namespace Ui {
 class MainWindow;
@@ -23,10 +24,13 @@ protected slots:
     void OnProgramChanged(int index);
     void noteOn(char note, char velocity);
     void noteOff(char note);
+    void readPendingDatagrams();
 
 private:
     Ui::MainWindow *ui;
     RtMidiOut* _midiout;
+    QUdpSocket* udpSocket;
+
 
 };
 

@@ -19,6 +19,7 @@ set(rt_keys_FORMS
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Network REQUIRED)
 qt5_wrap_cpp(rt_keys_HEADERS_MOC ${rt_keys_HEADERS})
 qt5_wrap_ui(rt_keys_FORMS_HEADERS ${rt_keys_FORMS})
 
@@ -34,4 +35,4 @@ add_definitions(-D__WINDOWS_MM__)
 link_libraries (winmm)
 add_executable(rt-keys ${rt_keys_SRCS} ${rt_keys_HEADERS_MOC} ${rt_keys_FORMS_HEADERS})
 
-qt5_use_modules(rt-keys Widgets)
+qt5_use_modules(rt-keys Widgets Network)
