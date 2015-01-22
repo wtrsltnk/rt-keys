@@ -33,6 +33,7 @@ class Keyboard;
 #define MAX_OCTAVES 12
 
 
+class Piano;
 class Octave;
 
 class Key : public QGraphicsPolygonItem
@@ -52,15 +53,18 @@ public:
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent * event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
 
 };
 
 class Octave : public QGraphicsItemGroup
 {
 public:
-    Octave(unsigned char o);
+    Octave(Piano* piano, unsigned char o);
     virtual ~Octave();
 
+    Piano* _piano;
     Key* _keys[12];
     unsigned char _octave;
 };
@@ -88,6 +92,8 @@ public:
 
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void keyReleaseEvent(QKeyEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
 private:
     Ui::Keyboard *ui;
     bool _selectedNotes[128];

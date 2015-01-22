@@ -135,8 +135,18 @@ void Key::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     this->SetOn(false);
 }
 
-Octave::Octave(unsigned char o)
-    : QGraphicsItemGroup(), _octave(o)
+void Key::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    this->_parent->_piano->noteOn(this->_note, 90);
+}
+
+void Key::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    this->_parent->_piano->noteOff(this->_note);
+}
+
+Octave::Octave(Piano* piano, unsigned char o)
+    : QGraphicsItemGroup(), _piano(piano), _octave(o)
 {
     this->setHandlesChildEvents(false);
     for (int i = 0; i < 12; i++)
@@ -166,7 +176,7 @@ Piano::Piano(QWidget *parent) :
     this->_scene = new QGraphicsScene();
     for (int i = 0; i < MAX_OCTAVES; i++)
     {
-        this->_octaves[i] = new Octave(i);
+        this->_octaves[i] = new Octave(this, i);
         this->_scene->addItem(this->_octaves[i]);
         this->_octaves[i]->setPos(Piano::KeyWidth * 7 * i, 0);
     }
@@ -266,4 +276,14 @@ void Piano::keyReleaseEvent(QKeyEvent* event)
 {
     if (event->isAutoRepeat() == false)
         this->SelectCharacter(char(event->key()), false);
+}
+
+void Piano::mousePressEvent(QMouseEvent* event)
+{
+    std::cout << "press" << std::endl;
+}
+
+void Piano::mouseReleaseEvent(QMouseEvent* event)
+{
+    std::cout << "release" << std::endl;
 }
