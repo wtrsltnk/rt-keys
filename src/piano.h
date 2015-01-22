@@ -25,8 +25,6 @@
 
 #include <QWidget>
 #include <QGraphicsPolygonItem>
-#include "key.h"
-#include "octave.h"
 
 namespace Ui {
 class Keyboard;

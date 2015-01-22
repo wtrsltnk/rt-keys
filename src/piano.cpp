@@ -27,7 +27,6 @@
 #include <QTextDocument>
 #include <QTextOption>
 #include <iostream>
-#include "rtoutput.h"
 
 using namespace std;
 
