@@ -4,13 +4,16 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), _midiout(0)
 {
+    this->_midiout = new RtMidiOut();
+    if (this->_midiout->getPortCount() > 0)
+        this->_midiout->openPort(0);
+
     ui->setupUi(this);
 
-    std::vector<std::string> ports = RtOutput::Instance().listPorts();
-    for (std::vector<std::string>::iterator s = ports.begin(); s != ports.end(); ++s)
-        this->ui->cmbPort->addItem(QString::fromStdString(*s));
+    for (int i = 0; i < this->_midiout->getPortCount(); i++)
+        this->ui->cmbPort->addItem(QString::fromStdString(this->_midiout->getPortName(i)));
 
     for (int i = 0; i < 16; i++)
         this->ui->cmbChannel->addItem(QString("Channel ") + QString::number(i+1));
@@ -25,29 +28,54 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->cmbChannel, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChannelChanged(int)));
     connect(this->ui->cmbBank, SIGNAL(currentIndexChanged(int)), this, SLOT(OnBankChanged(int)));
     connect(this->ui->cmbProgram, SIGNAL(currentIndexChanged(int)), this, SLOT(OnProgramChanged(int)));
+
+    connect(this->ui->piano, SIGNAL(noteOn(char,char)), this, SLOT(noteOn(char,char)));
+    connect(this->ui->piano, SIGNAL(noteOff(char)), this, SLOT(noteOff(char)));
 }
 
 MainWindow::~MainWindow()
 {
+    if (this->_midiout != 0)
+    {
+        delete this->_midiout;
+        this->_midiout = 0;
+    }
     delete ui;
+}
+
+void MainWindow::noteOn(char note, char velocity)
+{
+    std::vector<unsigned char> message;
+
+    message.push_back(144);
+    message.push_back(note);
+    message.push_back(velocity);
+
+    this->_midiout->sendMessage(&message);
+}
+
+void MainWindow::noteOff(char note)
+{
+    std::vector<unsigned char> message;
+
+    message.push_back(128);
+    message.push_back(note);
+    message.push_back(0);
+
+    this->_midiout->sendMessage(&message);
 }
 
 void MainWindow::OnPortChanged(int index)
 {
-    RtOutput::Instance().changePort(index);
+    this->_midiout->closePort();
+    this->_midiout->openPort(index);
 }
 
 void MainWindow::OnChannelChanged(int index)
-{
-    RtOutput::Instance().changeChannel(index);
-}
+{ }
 
 void MainWindow::OnBankChanged(int index)
-{
-    RtOutput::Instance().changeBank(index);
-}
+{ }
 
 void MainWindow::OnProgramChanged(int index)
-{
-    RtOutput::Instance().changeProgram(index);
-}
+{ }

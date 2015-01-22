@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "RtMidi.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,9 +21,13 @@ protected slots:
     void OnChannelChanged(int index);
     void OnBankChanged(int index);
     void OnProgramChanged(int index);
+    void noteOn(char note, char velocity);
+    void noteOff(char note);
 
 private:
     Ui::MainWindow *ui;
+    RtMidiOut* _midiout;
+
 };
 
 #endif // MAINWINDOW_H

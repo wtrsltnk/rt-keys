@@ -2,18 +2,12 @@ set(rt_keys_SRCS
     rt-piano.cpp
     mainwindow.cpp
     piano.cpp
-    octave.cpp
-    key.cpp
-    rtoutput.cpp
     RtMidi.cpp
     )
 
 set(rt_keys_HEADERS
     mainwindow.h
     piano.h
-    octave.h
-    key.h
-    rtoutput.h
     RtMidi.h
     RtError.h
     )
