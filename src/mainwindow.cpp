@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::readPendingDatagrams()
 {
+    std::cout << "recv" << std::endl;
     while (udpSocket->hasPendingDatagrams())  {
         QByteArray datagram;
         datagram.resize(udpSocket->pendingDatagramSize());
@@ -49,6 +50,7 @@ void MainWindow::readPendingDatagrams()
         udpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
 
         char note = datagram.data()[1];
+        std::cout << "recv " << int(note) << std::endl;
         if (datagram.data()[0] == '1')
             this->noteOn(note, datagram.data()[2]);
         else if (datagram.data()[0] == '0')

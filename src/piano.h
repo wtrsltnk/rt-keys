@@ -30,8 +30,11 @@ namespace Ui {
 class Keyboard;
 }
 
-#define MAX_OCTAVES 12
+#define MIDI_FIRST_NOTE 21
+#define NOTES_PER_OCTAVE 12
+#define MAX_OCTAVES 8
 
+extern char* keynames[];
 
 class Piano;
 class Octave;
@@ -95,6 +98,7 @@ public:
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
 private:
+    QMap<int, bool> _keys;
     Ui::Keyboard *ui;
     bool _selectedNotes[128];
     bool _sendnotes;

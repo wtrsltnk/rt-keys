@@ -85,6 +85,7 @@ Key::~Key()
 
 void Key::SetOn(bool on)
 {
+    std::cout << int(this->_note) << std::endl;
     if (this->_isEnabled)
     {
         if (on)
@@ -149,11 +150,11 @@ Octave::Octave(Piano* piano, unsigned char o)
     : QGraphicsItemGroup(), _piano(piano), _octave(o)
 {
     this->setHandlesChildEvents(false);
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < NOTES_PER_OCTAVE; i++)
     {
-        if (o * 12 + i < 128)
+        if (o * NOTES_PER_OCTAVE + i < 128)
         {
-            this->_keys[i] = new Key(this, o * 12 + i);
+            this->_keys[i] = new Key(this, MIDI_FIRST_NOTE + (o * NOTES_PER_OCTAVE + i));
             this->addToGroup(this->_keys[i]);
         }
         else
@@ -215,7 +216,7 @@ Piano::~Piano()
 void Piano::SelectCharacter(char c, bool on)
 {
     unsigned char note = Piano::_characterNoteMapping[c];
-    if (note >= 0 && note < 128)
+    if (int(note) >= 0 && int(note) < 128)
     {
         int key = note % 12;
         int octave = (note - key) / 12;
@@ -268,14 +269,20 @@ void Piano::SetNoteColor(unsigned char note, const QColor& color)
 
 void Piano::keyPressEvent(QKeyEvent* event)
 {
-    if (event->isAutoRepeat() == false)
+    if (event->isAutoRepeat() == false && this->_keys.contains(event->key()) == false || this->_keys[event->key()] == false)
+    {
+        this->_keys[event->key()] = true;
         this->SelectCharacter(char(event->key()), true);
+    }
 }
 
 void Piano::keyReleaseEvent(QKeyEvent* event)
 {
-    if (event->isAutoRepeat() == false)
+    if (event->isAutoRepeat() == false && this->_keys.contains(event->key()) != false && this->_keys[event->key()] != false)
+    {
+        this->_keys[event->key()] = false;
         this->SelectCharacter(char(event->key()), false);
+    }
 }
 
 void Piano::mousePressEvent(QMouseEvent* event)
@@ -287,3 +294,17 @@ void Piano::mouseReleaseEvent(QMouseEvent* event)
 {
     std::cout << "release" << std::endl;
 }
+
+char* keynames[] = {
+    "C",
+    "C#",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B"
+};
